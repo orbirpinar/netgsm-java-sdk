@@ -12,6 +12,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <revision>${revision}</revision>
     </properties>
 
     <dependencies>
@@ -50,5 +51,40 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/orbirpinar/netgsm-java-sdk</url>
+        </repository>
+    </distributionManagement>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <activation>
+                <property>
+                    <name>branch</name>
+                    <value>master</value>
+                </property>
+            </activation>
+            <properties>
+                <revision>1.0</revision>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>snapshot</id>
+            <activation>
+                <property>
+                    <name>branch</name>
+                    <value>!master</value>
+                </property>
+            </activation>
+            <properties>
+                <revision>1.0-SNAPSHOT</revision>
+            </properties>
+        </profile>
+    </profiles>
 
 </project>
