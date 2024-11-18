@@ -44,7 +44,7 @@ jobs:
           mvn versions:set -DnewVersion=$NEW_VERSION -DprocessAllModules=true
 
           # Commit the version change
-          git add pom.xml **/pom.xml
+          git add pom.xml 
           git commit -m "Release version $NEW_VERSION"
           git push origin master
 
