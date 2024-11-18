@@ -1,0 +1,50 @@
+name: Publish Maven Package
+
+on:
+  push:
+    branches:
+      - master
+      - "**"  # Includes all other branches for snapshots
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Set up JDK
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17' # Adjust the version to your project's Java version
+          server-id: github
+          settings-path: ${{ github.workspace }}
+          token: ${{ secrets.GH_TOKEN }}
+
+      # Cache Maven dependencies
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      # Build and Publish
+      - name: Build and Publish
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          # Check if it's the master branch
+          if [[ "${GITHUB_REF_NAME}" == "master" ]]; then
+            echo "Building and publishing release version..."
+            mvn clean deploy -Prelease
+          else
+            echo "Building and publishing snapshot version..."
+            mvn clean deploy -Psnapshot
+          fi
